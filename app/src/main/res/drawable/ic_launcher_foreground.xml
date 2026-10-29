@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Stylized "P12" transformation emblem: numeral '1' and numeral '2' formed with bold athletic geometry in safe zone (28-80) -->
+    <!-- Digit '1' -->
+    <path
+        android:fillColor="#8BFF62"
+        android:pathData="M 33,38 L 41,32 L 41,74 L 33,74 Z" />
+    <path
+        android:fillColor="#8BFF62"
+        android:pathData="M 28,70 L 46,70 L 46,74 L 28,74 Z" />
+    
+    <!-- Digit '2' with dynamic athletic angles -->
+    <path
+        android:fillColor="#8BFF62"
+        android:pathData="M 51,40 C 51,34 56,31 63,31 C 70,31 75,35 75,41 C 75,47 70,52 64,57 L 54,66 L 76,66 L 76,74 L 50,74 L 50,67 L 64,53 C 68,49 70,46 70,42 C 70,38 67,36 63,36 C 58,36 56,38 56,41 Z" />
+
+    <!-- Lightning accent chevron at top-right indicating transformation -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 72,27 L 78,27 L 73,34 L 79,34 L 70,44 L 73,37 L 69,37 Z" />
+</vector>

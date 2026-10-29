@@ -1,0 +1,140 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isValidTimestamp(val) {
+      return val is timestamp;
+    }
+
+    // --- User Profile ---
+    function isValidUserProfile(data, userId) {
+      return data.userId == userId
+        && data.name is string && data.name.size() > 0 && data.name.size() < 100
+        && data.startDate is string
+        && data.dailyCaloriesTarget is int && data.dailyCaloriesTarget >= 500 && data.dailyCaloriesTarget <= 10000
+        && data.dailyProteinTarget is int && data.dailyProteinTarget >= 10 && data.dailyProteinTarget <= 500;
+    }
+
+    // --- Workout Session ---
+    function isValidWorkoutSession(data, userId) {
+      return data.userId == userId
+        && data.date is string
+        && data.workoutTitle is string && data.workoutTitle.size() > 0
+        && data.isCompleted is bool;
+    }
+
+    // --- Exercise Log ---
+    function isValidExerciseLog(data, userId) {
+      return data.userId == userId
+        && data.date is string
+        && data.exerciseName is string && data.exerciseName.size() > 0
+        && data.isCompleted is bool;
+    }
+
+    // --- Meal Log ---
+    function isValidMealLog(data, userId) {
+      return data.userId == userId
+        && data.date is string
+        && data.mealType is string
+        && data.foodName is string && data.foodName.size() > 0
+        && (data.calories is int || data.calories is float)
+        && (data.protein is int || data.protein is float);
+    }
+
+    // --- Cardio Log ---
+    function isValidCardioLog(data, userId) {
+      return data.userId == userId
+        && data.date is string
+        && data.activityType is string && data.activityType.size() > 0
+        && data.durationMinutes is int && data.durationMinutes >= 0;
+    }
+
+    // --- Body Measurement ---
+    function isValidBodyMeasurement(data, userId) {
+      return data.userId == userId
+        && data.date is string;
+    }
+
+    // --- Photo Entry ---
+    function isValidPhotoEntry(data, userId) {
+      return data.userId == userId
+        && data.date is string
+        && data.filePath is string && data.filePath.size() > 0;
+    }
+
+    // --- Chat Message ---
+    function isValidChatMessage(data, userId) {
+      return data.userId == userId
+        && data.role in ['user', 'model', 'system']
+        && data.content is string && data.content.size() > 0;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(incoming(), userId);
+      allow update: if isOwner(userId) && isValidUserProfile(incoming(), userId);
+      allow delete: if isOwner(userId);
+
+      match /workoutSessions/{sessionId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidWorkoutSession(incoming(), userId);
+        allow update: if isOwner(userId) && isValidWorkoutSession(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /exerciseLogs/{logId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidExerciseLog(incoming(), userId);
+        allow update: if isOwner(userId) && isValidExerciseLog(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /mealLogs/{mealId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidMealLog(incoming(), userId);
+        allow update: if isOwner(userId) && isValidMealLog(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /cardioLogs/{cardioId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidCardioLog(incoming(), userId);
+        allow update: if isOwner(userId) && isValidCardioLog(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /bodyMeasurements/{measurementId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidBodyMeasurement(incoming(), userId);
+        allow update: if isOwner(userId) && isValidBodyMeasurement(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /photoEntries/{photoId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidPhotoEntry(incoming(), userId);
+        allow update: if isOwner(userId) && isValidPhotoEntry(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+
+      match /chatMessages/{messageId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidChatMessage(incoming(), userId);
+        allow update: if isOwner(userId) && isValidChatMessage(incoming(), userId);
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}
